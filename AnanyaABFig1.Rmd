@@ -18,7 +18,7 @@ c("SPL2","PHO8","PHM2","PHO12","PHO84","PHM4","PHO86","PHM3","SDT1","PHO81","ISC
 
 ##adds gene names to each data set
 ##0mM Phosphate
-No_Pi<-data.frame(X,mm_00PHO)  
+No_Pi<-data.frame(X,mm_00pho)  
 Nopi<-as.matrix(No_Pi[,-1])
 rownames(Nopi)=(No_Pi[,1])
 
@@ -219,5 +219,56 @@ ggplot(data = melted_dat5cor, aes(Var1, Var2, fill = value))+
  geom_tile()+
    ggtitle(".5mM")+
       scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+##just testing something
+
+
+pi06array<- cor(mm_06pho, use= "complete.obs", method = "pearson")
+
+melted_pi06 <- melt(pi06array)
+
+ggplot(data = melted_pi06, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+##so yeah, there was absolutely no point in making all those pearson matrices beforehand, I could have just used the original matrix pulled from the excel doc... >:(
+
+
+
+##did it wrong the first time, trying it again
+
+pi00array<-(cor(mm_00pho, use= "complete.obs", method= "pearson"))
+pi06array<- cor(mm_06pho, use= "complete.obs", method = "pearson")
+pi2array<- cor(mm_2pho, use= "complete.obs", method = "pearson")
+pi5array<- cor(mm_5pho, use= "complete.obs", method = "pearson")
+
+##ggplot
+melted_pi00 <- melt(pi00array)
+melted_pi06 <- melt(pi06array)
+melted_pi2 <- melt(pi2array)
+melted_pi5 <- melt(pi5array)
+
+ggplot(data = melted_pi00, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle("0mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+ggplot(data = melted_pi06, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".06mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+ggplot(data = melted_pi2, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".2mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+ggplot(data = melted_pi5, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
 ```
 
