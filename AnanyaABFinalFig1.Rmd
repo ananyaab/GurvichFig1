@@ -1,0 +1,99 @@
+---
+title: "Fig1Finals"
+author: "Ananya AB"
+date: "7/18/2020"
+output: html_document
+---
+
+Preliminaries and Setup
+```{r}
+##creates gene names as a value set
+X<-
+c("SPL2","PHO8","PHM2","PHO12","PHO84","PHM4","PHO86","PHM3","SDT1","PHO81","ISC10","SNA3","YNL208W","PHM4","YLR346C", "PHO11","VIP1","PHO5","MAF1","PCA1","DUR3","PHM6","ATG19","PHM8","ICY1","PLC1","HPF1","GDE1","YBR287W","ATG22","KCS1","PHO89","DDP1")
+
+
+##adds gene names to each data set
+##0mM Phosphate
+No_Pi<-data.frame(X,mm_00pho)  
+Nopi<-as.matrix(No_Pi[,-1])
+rownames(Nopi)=(No_Pi[,1])
+
+##.06mM Phosphate
+X_06mM_Pi<-data.frame(X,mm_06pho)
+X06mMPi<-as.matrix(X_06mM_Pi[,-1])
+rownames(X06mMPi)=(X_06mM_Pi[,1])
+
+##.2mM Phosphate
+X_2mM_Pi<-data.frame(X,mm_2pho)
+X2mMPi<-as.matrix(X_2mM_Pi[,-1])
+rownames(X2mMPi)=(X_2mM_Pi[,1])
+
+##.5mM phosphate
+X_5_mM_Pi<-data.frame(X,mm_5pho)
+X5mMPi<-as.matrix(X_5_mM_Pi[,-1])
+rownames(X5mMPi)=(X_5_mM_Pi[,1])
+```
+
+Figure 1C
+```{r}
+##made a standard heatmap of gene expression over time
+
+heatmap(as.matrix(Nopi), Colv = NA, Rowv = NA, main = "No Pi Heatmap")
+
+heatmap(as.matrix(X06mMPi), Colv = NA, Rowv = NA, main = ".06mM Heatmap")
+
+heatmap(as.matrix(X2mMPi), Colv = NA, Rowv = NA, main = ".2mM Heatmap")
+
+heatmap(as.matrix(X5mMPi), Colv = NA, Rowv = NA, main = ".5mM Heatmap")
+```
+
+Figure 1 D1.1
+```{r}
+#pairwise matrices w/pearson correlation
+
+##removes NA data
+pi00array<-(cor(mm_00pho, use= "complete.obs", method= "pearson"))
+pi06array<- cor(mm_06pho, use= "complete.obs", method = "pearson")
+pi2array<- cor(mm_2pho, use= "complete.obs", method = "pearson")
+pi5array<- cor(mm_5pho, use= "complete.obs", method = "pearson")
+
+##ggplot
+melted_pi00 <- melt(pi00array)
+melted_pi06 <- melt(pi06array)
+melted_pi2 <- melt(pi2array)
+melted_pi5 <- melt(pi5array)
+
+ggplot(data = melted_pi00, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle("0mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+ggplot(data = melted_pi06, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".06mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+ggplot(data = melted_pi2, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".2mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+ggplot(data = melted_pi5, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+```
+
+Figure 1 D1.2
+```{r}
+##extended version of .2mM Growth
+pi2arrayext<- cor(mm2extended, use= "complete.obs", method = "pearson")
+
+melted_pi2ext <- melt(pi2arrayext)
+
+ggplot(data = melted_pi2ext, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".2mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+```
+
