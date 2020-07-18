@@ -9,7 +9,7 @@ getwd()
 install.packages('ggplot2')
 library(ggplot2)
 
-usethis::use_git()
+usethis::use_git()   
 
 ##creates gene names as a value set
 X<-
@@ -220,4 +220,5 @@ ggplot(data = melted_dat5cor, aes(Var1, Var2, fill = value))+
    ggtitle(".5mM")+
       scale_fill_gradient(name="Pearson\nCorrelation")
 ```
-
+ 
+ test
