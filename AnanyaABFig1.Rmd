@@ -1,0 +1,223 @@
+---
+title: "Dual role of starvation signaling in promoting growth and recovery Data"
+output: html_notebook
+---
+```{r}
+
+getwd()
+
+install.packages('ggplot2')
+library(ggplot2)
+
+usethis::use_git()
+
+##creates gene names as a value set
+X<-
+c("SPL2","PHO8","PHM2","PHO12","PHO84","PHM4","PHO86","PHM3","SDT1","PHO81","ISC10","SNA3","YNL208W","PHM4","YLR346C", "PHO11","VIP1","PHO5","MAF1","PCA1","DUR3","PHM6","ATG19","PHM8","ICY1","PLC1","HPF1","GDE1","YBR287W","ATG22","KCS1","PHO89","DDP1")
+
+
+##adds gene names to each data set
+##0mM Phosphate
+No_Pi<-data.frame(X,mm_00PHO)  
+Nopi<-as.matrix(No_Pi[,-1])
+rownames(Nopi)=(No_Pi[,1])
+
+##.06mM Phosphate
+X_06mM_Pi<-data.frame(X,mm_06pho)
+X06mMPi<-as.matrix(X_06mM_Pi[,-1])
+rownames(X06mMPi)=(X_06mM_Pi[,1])
+
+##.2mM Phosphate
+X_2mM_Pi<-data.frame(X,mm_2pho)
+X2mMPi<-as.matrix(X_2mM_Pi[,-1])
+rownames(X2mMPi)=(X_2mM_Pi[,1])
+
+##.5mM phosphate
+X_5_mM_Pi<-data.frame(X,mm_5pho)
+X5mMPi<-as.matrix(X_5_mM_Pi[,-1])
+rownames(X5mMPi)=(X_5_mM_Pi[,1])
+
+##made a standard heatmap of 0mM Phosphate gene expression over time
+heatmap(as.matrix(Nopi), Colv = NA, Rowv = NA, main = "No Pi Heatmap")
+heatmap(as.matrix(X06mMPi), Colv = NA, Rowv = NA, main = ".06mM Heatmap")
+heatmap(as.matrix(X2mMPi), Colv = NA, Rowv = NA, main = ".2mM Heatmap")
+heatmap(as.matrix(X5mMPi), Colv = NA, Rowv = NA, main = ".5mM Heatmap")
+
+##Pearson correlations
+cor(Nopi, method = c("pearson"))
+cor(X_06mM_Pi, method=c("pearson"))
+cor(X2mMPi, method=("pearson"))
+cor(X5mMPi, method = c("pearson"))
+
+##started making pearson correlation matrices for each group
+pho00array<-cor(Nopi, method= "pearson")
+pho06array<-cor(X06mMPi, method= "pearson")
+pho2array<-cor(X2mMPi, method= "pearson")
+pho5array<-cor(X5mMPi, method= "pearson")
+
+##when mapped, there was not a diagonal line of 1 correlations as there should have been, and missing data points
+heatmap(pho00array, Colv= NA, Rowv= NA, main= "0mM pi Heatmap Test")
+heatmap(pho06array, Colv= NA, Rowv= NA, main= ".06 pi Heatmap Test")
+heatmap(pho2array, Colv= NA, Rowv= NA, main= ".2mM pi Heatmap Test")
+heatmap(pho5array, Colv= NA, Rowv= NA, main= ".5mM pi Heatmap Test")
+
+##reshapes data into usable format for geom_tile
+library(reshape2)
+melted_dat06 <- melt(pho06array)
+melted_dat00 <- melt(pho00array)
+melted_dat2 <- melt(pho2array)
+melted_dat5 <- melt(pho5array)
+
+##found a correlation color map program in ggplot, got rid of the first problem, but there is still missing data points
+ggplot(data = melted_dat00, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   scale_fill_gradient(name="Pearson\nCorrelation")
+
+##reference for extra stuff
+'+
+ scale_fill_gradient2(low = "light blue", high = "purple", mid = "blue", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+   name="Pearson\nCorrelation") +
+  theme_minimal()+ 
+ theme(axis.text.x = element_text(angle = 30, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed()'
+##############################
+
+ggplot(data = melted_dat06, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   scale_fill_gradient(name="Pearson\nCorrelation")
+
+################################
+
+ggplot(data = melted_dat2, aes(Var2, Var1, fill = value))+
+ geom_tile()+
+   scale_fill_gradient(name="Pearson\nCorrelation")
+
+############################
+
+ggplot(data = melted_dat5, aes(Var2, Var1, fill = value))+
+ geom_tile()+
+   scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+##looking at the actual data sets from the study, there are some NAs which are probably the problem- can't take the pearson correlation of missing data. If we change the NAs to an actual number the heatmap is fine, but that wouldn't work in the long run. Have not figured out a way to remove the NAs yet
+
+
+##I looked up some code and tried to omit NA data
+new00data<- na.omit(Nopi)
+new06data<- na.omit(X06mMPi)
+new2data<- na.omit(X2mMPi)
+new5data<- na.omit(X5mMPi)
+
+##new pearson matrix with omitted NAs
+newpho00array<-(cor(new00data, method= "pearson"))
+newpho06array<-(cor(new06data, method= "pearson"))
+newpho2array<-(cor(new2data, method= "pearson"))
+newpho5array<-(cor(new5data, method= "pearson"))
+
+##blank spots fixed but diagonal line still missing
+heatmap(newpho00array, Colv= NA, Rowv= NA, main= "0 pi Heatmap")
+heatmap(newpho06array, Colv= NA, Rowv= NA, main= ".06mM pi Heatmap")
+heatmap(newpho2array, Colv= NA, Rowv= NA, main= ".2mM pi Heatmap")
+heatmap(newpho5array, Colv= NA, Rowv= NA, main= ".5mM pi Heatmap")
+
+##tried ggplot format
+library(reshape2)
+
+melted_dat00new <- melt(newpho00array)
+melted_dat06new <- melt(newpho06array)
+melted_dat2new <- melt(newpho2array)
+melted_dat5new <- melt(newpho5array)
+
+##it worked! (i think) diagonal line is there (though hard to see sometimes because of color scheme) and no missing data points
+ggplot(data = melted_dat00new, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle("0mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+##########################
+
+ggplot(data = melted_dat06new, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".06mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+########################
+
+ggplot(data = melted_dat2new, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".2mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+#########################
+
+ggplot(data = melted_dat5new, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+##Figure 1D
+
+X_2mMext<-data.frame(X,mm2extended)
+X2mMPiext<-as.matrix(X_2mMext[,-1])
+rownames(X2mMPiext)=(X_2mMext[,1])
+
+ext2data<- na.omit(X2mMPiext)
+
+extpho2array<-(cor(ext2data, method= "pearson"))
+
+melted_dat2ext <- melt(extpho2array)
+
+ggplot(data = melted_dat2ext, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".2mM Extended")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+##Trying to fix the X in front of all the hours
+Y<-
+   c("1", "2", "3.5", "5", "6.5", "8", "9.5", "24.67")
+
+Nopi <- setNames(Nopi, c("1", "2", "3.5", "5", "6.5", "8", "9.5", "24.67"))
+
+##looked it up, apparently R does that automatically when a title is a number, can only fix this by adding a character in front
+
+
+##trying out new ways to remove NA data
+?cor()
+
+###from what i gathered this ignores NA data w/ the use specificity
+corpho00array<-(cor(new00data, use= "complete.obs", method= "pearson"))
+corpho06array<-(cor(new06data, use= "complete.obs", method= "pearson"))
+corpho2array<-(cor(new2data, use= "complete.obs", method= "pearson"))
+corpho5array<-(cor(new5data, use= "complete.obs", method= "pearson"))
+
+##ggplot
+melted_dat00cor <- melt(corpho00array)
+melted_dat06cor <- melt(corpho06array)
+melted_dat2cor <- melt(corpho2array)
+melted_dat5cor <- melt(corpho5array)
+
+ggplot(data = melted_dat00cor, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+ggplot(data = melted_dat06cor, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+ggplot(data = melted_dat2cor, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+
+
+ggplot(data = melted_dat5cor, aes(Var1, Var2, fill = value))+
+ geom_tile()+
+   ggtitle(".5mM")+
+      scale_fill_gradient(name="Pearson\nCorrelation")
+```
+
