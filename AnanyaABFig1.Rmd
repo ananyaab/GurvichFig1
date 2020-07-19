@@ -1,6 +1,8 @@
 ---
 title: "Dual role of starvation signaling in promoting growth and recovery Data"
 output: html_notebook
+
+kkkkk
 ---
 ```{r}
 
@@ -270,5 +272,6 @@ ggplot(data = melted_pi5, aes(Var1, Var2, fill = value))+
    ggtitle(".5mM")+
       scale_fill_gradient(name="Pearson\nCorrelation")
 
+warnings()
 ```
 
